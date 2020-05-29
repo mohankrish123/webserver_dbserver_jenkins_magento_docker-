@@ -1,0 +1,31 @@
+version: '3'
+services:
+     web:
+       image: dockerhub.kensium.com/magento225/git_magento225:4.0
+       hostname: magento225
+       extra_hosts:
+         - "docker:192.168.8.38"
+       labels:
+            - traefik.enable=true
+            - traefik.frontend.rule=Host:devops.magento225.com
+            - traefik.port=80
+            - traefik.docker.network=web
+       restart: always
+       container_name: magento225
+       tty: true
+       volumes:
+         - ./magento225:/var/www/html/
+         - ./src:/storage
+         - ./scripts/phpservice.sh:/tmp/phpservice.sh
+
+       command: >
+            /bin/bash /tmp/phpservice.sh
+       networks:
+            - web    
+            - network-back
+networks:
+   web:
+     external: true
+   network-back:
+     external: false
+
